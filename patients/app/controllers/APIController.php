@@ -146,7 +146,7 @@ class APIController extends \Phalcon\Mvc\Controller
 
         $request = new Request();
 
-        if ($request->isPut()) {
+        if ($request->isPost()) {
             $statusCode = 200;
             $messageRes = "Successfully edit patient";
             $resStatus = "success";
@@ -157,12 +157,12 @@ class APIController extends \Phalcon\Mvc\Controller
                 $messageRes = "Failed, data with id: " . $id . " not found";
                 $resStatus = "failed";
             } else {
-                $patient->name = $request->getPut("name");
-                $patient->sex = $request->getPut("sex");
-                $patient->religion = $request->getPut("religion");
-                $patient->nik = $request->getPut("nik");
-                $patient->phone = $request->getPut("phone");
-                $patient->address = $request->getPut("address");
+                $patient->name = $request->getPost("name");
+                $patient->sex = $request->getPost("sex");
+                $patient->religion = $request->getPost("religion");
+                $patient->nik = $request->getPost("nik");
+                $patient->phone = $request->getPost("phone");
+                $patient->address = $request->getPost("address");
                 if ($patient->save() === false) {
                     $statusCode = 400;
                     $resStatus = "failed";
@@ -202,7 +202,7 @@ class APIController extends \Phalcon\Mvc\Controller
 
         $request = new Request();
 
-        if ($request->isDelete()) {
+        if ($request->isGet()) {
             $statusCode = 200;
             $messageRes = "Successfully delete patient";
             $resStatus = "success";
