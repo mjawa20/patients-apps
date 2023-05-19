@@ -1,7 +1,8 @@
 <script>
+import { mapActions, mapState } from 'pinia'
 import Card from '../components/CardPatient.vue'
 import CardSkeleton from '../components/CardSkeleton.vue'
-import { api } from '../helpers/axios'
+import { useStateStore } from '../stores/state'
 
 export default {
   components: {
@@ -11,22 +12,12 @@ export default {
   async created() {
     this.fetchData()
   },
-  data() {
-    return {
-      loading: true,
-      patients: []
-    }
-  },
   methods: {
-    async fetchData() {
-      try {
-        const res = await api.get('/patients')
-        this.patients = res.data.result
-      } catch (error) {
-        console.log(error)
-      } finally { setTimeout(() => this.loading = false, 800) }
-    }
-  }
+    ...mapActions(useStateStore, ['fetchData'])
+  },
+  computed: {
+    ...mapState(useStateStore, ['loading', 'patients'])
+  },
 }
 </script>
 
@@ -37,6 +28,9 @@ export default {
     </div>
     <div v-else class="grid lg:grid-cols-4 gap-4">
       <Card v-for="patient in patients" :key="patient.id" :data="patient" :fetchData="fetchData" />
+    </div>
+    <div v-if="!loading && !patients.length" class="text-2xl text-center text-black">
+      No data
     </div>
   </div>
 </template>

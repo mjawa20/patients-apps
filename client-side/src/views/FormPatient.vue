@@ -1,44 +1,27 @@
 <script>
-import { api } from '../helpers/axios';
+import { mapActions, mapState } from 'pinia';
+import { useStateStore } from '../stores/state';
 
 export default {
   data() {
     return {
       state: {},
-      loading: false
+      id: this.$route.params.id
     }
+  },
+  computed: {
+    ...mapState(useStateStore, ['loading', 'patient'])
   },
   async created() {
-    const { id } = this.$route.params
-    if (id) this.fetchData(id)
+    if (this.id) { this.getDetail(this.id).then(() => this.state = this.patient) }
   },
   methods: {
+    ...mapActions(useStateStore, ['getDetail', 'handleUpdateOrCreate']),
     async handleSubmit() {
-      this.loading = true
-      try {
-        const { id } = this.$route.params
-        const endpoint = id ? `/patientEdit/${id}` : '/patientAdd'
-        const methods = id === '' ? 'put' : 'post' 
-
-        await api[methods](endpoint, this.state, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        })
+      this.handleUpdateOrCreate(this.state, this.id).then(() => {
         this.$router.push('/')
-      } catch (error) {
-        console.log(error)
-      } finally { this.loading = false }
+      })
     },
-    async fetchData(id) {
-      try {
-        const { data } = await api.get(`/patient/${id}`)
-        this.state = data?.result || {}
-      } catch (error) {
-        alert('Internal server error')
-        this.$router.push('/')
-      }
-    }
   }
 }
 
@@ -46,7 +29,6 @@ export default {
 
 <template>
   <div class="flex justify-center">
-
     <form @submit.prevent="handleSubmit" class="w-full bg-white p-10 rounded-lg max-w-lg">
       <div class="flex flex-wrap -mx-3 mb-3">
         <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">

@@ -1,21 +1,16 @@
 <script>
-import { api } from '../helpers/axios'
+import { mapActions, mapState } from 'pinia'
+import { useStateStore } from '../stores/state'
 
 export default {
   async created() {
-    try {
-      const { id } = this.$route.params
-      const res = await api.get(`/patient/${id}`)
-      this.patient = res.data?.result
-    } catch (error) {
-      console.log(error)
-    }
+    const { id } = this.$route.params
+    this.getDetail(id)
   },
-  data() {
-    return {
-      patient: null
-    }
-  }
+  computed: { ...mapState(useStateStore, ['patient', 'loading']) },
+  methods: {
+    ...mapActions(useStateStore, ['getDetail'])
+  },
 }
 </script>
 
